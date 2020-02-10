@@ -9,16 +9,39 @@
 import UIKit
 
 class DetailViewController: UIViewController {
+    
+    @IBOutlet weak var taskTextField: UITextField!
+    @IBOutlet weak var subjectTextField: UITextField!
+    @IBOutlet weak var dueDateTextField: UITextField!
+    @IBOutlet weak var discriptionTextField: UITextField!
+    //task = city
+    //subject = state
+    //dueDate = population
 
-    @IBOutlet weak var detailDescriptionLabel: UILabel!
-
-
-    func configureView() {
-        // Update the user interface for the detail item.
-        if let detail = detailItem {
-            if let label = detailDescriptionLabel {
-                label.text = detail.timestamp!.description
-            }
+    var detailItem: Task? {
+          didSet {
+              // Update the view.
+              configureView()
+          }
+      }
+   func configureView() {
+      // Update the user interface for the detail item
+      if let task = self.detailItem {
+         if taskTextField != nil {
+            taskTextField.text = task.name
+            subjectTextField.text = task.subject
+            dueDateTextField.text = String(task.dueDate)
+            discriptionTextField.text = task.discription
+         }
+      }
+   }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        if let task = self.detailItem {
+           task.name = taskTextField.text!
+           task.subject = subjectTextField.text!
+           task.dueDate = Int(dueDateTextField.text!)!
+            task.discription = (discriptionTextField.text!)
         }
     }
 
@@ -28,12 +51,7 @@ class DetailViewController: UIViewController {
         configureView()
     }
 
-    var detailItem: Event? {
-        didSet {
-            // Update the view.
-            configureView()
-        }
-    }
+  
 
 
 }
