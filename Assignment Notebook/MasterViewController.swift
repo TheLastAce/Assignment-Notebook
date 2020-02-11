@@ -14,6 +14,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     var tasks = [Task]()
     var detailViewController: DetailViewController? = nil
     var managedObjectContext: NSManagedObjectContext? = nil
+    let defaults = UserDefaults.standard
     
     
     override func viewDidLoad() {
@@ -27,12 +28,24 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let controllers = split.viewControllers
             detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
         }
+        if let savedData = defaults.object(forKey: "data") as? Data {
+            if let decoded = try? JSONDecoder().decode([Task].self, from: savedData) {
+                tasks = decoded
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
         super.viewWillAppear(animated)
         tableView.reloadData()
+        saveData()
+    }
+    
+    func saveData() {
+        if let encoded = try? JSONEncoder().encode(tasks) {
+            defaults.set(encoded, forKey: "data")
+        }
     }
     
     @objc
@@ -64,12 +77,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                                 subject: subjectTextField.text!,
                                 dueDate: dueDate,
                                 discription: discriptionTextField.text!)
-                                self.tasks.append(task)
-                    self.tableView.reloadData()
+                self.tasks.append(task)
+                self.tableView.reloadData()
+                self.saveData()
             }
         }
-    alert.addAction(insertAction)
-    present(alert, animated: true, completion: nil)
+        alert.addAction(insertAction)
+        present(alert, animated: true, completion: nil)
     }
     
     
@@ -100,7 +114,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-//        object.name
+        //        object.name
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         let object = tasks[indexPath.row]
         cell.textLabel!.text = object.name
@@ -113,10 +127,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-       tasks.remove(at: indexPath.row)
+        tasks.remove(at: indexPath.row)
         if editingStyle == .delete {
             let context = fetchedResultsController.managedObjectContext
             context.delete(fetchedResultsController.object(at: indexPath))
+            saveData()
             
             do {
                 try context.save()
@@ -134,8 +149,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-            let objectToMove = tasks.remove(at: sourceIndexPath.row)
-             tasks.insert(objectToMove, at: destinationIndexPath.row)
+        let objectToMove = tasks.remove(at: sourceIndexPath.row)
+        tasks.insert(objectToMove, at: destinationIndexPath.row)
+        saveData()
     }
     
     // MARK: - Fetched results controller
@@ -171,7 +187,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
         
         return _fetchedResultsController!
-    }    
+    }
     var _fetchedResultsController: NSFetchedResultsController<Event>? = nil
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
@@ -209,6 +225,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         tableView.endUpdates()
     }
     
+    
+    
     /*
      // Implementing the above methods to update the table view in response to individual changes may have performance implications if a large number of changes are made simultaneously. If this proves to be an issue, you can instead just implement controllerDidChangeContent: which notifies the delegate that all section and object changes have been processed.
      
@@ -219,4 +237,5 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
      */
     
 }
+
 
