@@ -12,14 +12,12 @@ class Task: Codable {
     var name : String
     var subject :  String
     var dueDate : Int
-    var discription : String
+    var description : String
     
-    init(name: String, subject: String, dueDate: Int, discription: String) {
+    init(name: String, subject: String, dueDate: Int, description: String) {
        self.name = name
        self.subject = subject
        self.dueDate = dueDate
-       self.discription = discription
+       self.description = description
     }
-
-
 }

@@ -123,7 +123,7 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Assignment Details" id="mOI-FS-AaM"/>
                     <connections>
-                        <outlet property="discriptionTextField" destination="jmi-z3-g0X" id="iNv-xe-bKz"/>
+                        <outlet property="descriptionTextField" destination="jmi-z3-g0X" id="b9z-uE-GUQ"/>
                         <outlet property="dueDateTextField" destination="pAM-5Z-Gmw" id="5Me-rq-CvC"/>
                         <outlet property="subjectTextField" destination="vY1-F9-rup" id="UrR-YX-fcj"/>
                         <outlet property="taskTextField" destination="9tc-um-Mn7" id="Fo3-J5-PBZ"/>
